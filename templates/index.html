@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VREL BLE Gateway</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f8;
+        }
+
+        h1 {
+            color: #222;
+        }
+
+        .box {
+            background: white;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #2e7d32;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        th {
+            background: #222;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>VREL BLE Gateway</h1>
+
+    <div class="box">
+        <h2>Gateway Advertisement Status</h2>
+        <p><b>Advertised Name:</b> <span id="advertisedName">Loading...</span></p>
+        <p><b>Advertising Status:</b> <span id="advertisingStatus">Loading...</span></p>
+        <p><b>Scanner Status:</b> <span id="scannerStatus">Loading...</span></p>
+        <p><b>Gateway Role:</b> <span id="gatewayRole">Loading...</span></p>
+        <p><b>Detected Devices:</b> <span id="detectedDevices">0</span></p>
+    </div>
+
+    <h2>Captured BLE Environmental / Advertisement Data</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>RSSI</th>
+                <th>Last Seen</th>
+                <th>Local Name</th>
+                <th>Service UUIDs</th>
+                <th>Manufacturer Data</th>
+            </tr>
+        </thead>
+        <tbody id="deviceTable"></tbody>
+    </table>
+
+    <script>
+        async function loadStatus() {
+            const response = await fetch('/api/status');
+            const status = await response.json();
+
+            document.getElementById('advertisedName').textContent = status.advertised_name;
+            document.getElementById('advertisingStatus').textContent = status.advertising;
+            document.getElementById('scannerStatus').textContent = status.scanner;
+            document.getElementById('gatewayRole').textContent = status.gateway_role;
+            document.getElementById('detectedDevices').textContent = status.detected_devices;
+        }
+
+        async function loadDevices() {
+            const response = await fetch('/api/devices');
+            const devices = await response.json();
+
+            const table = document.getElementById('deviceTable');
+            table.innerHTML = "";
+
+            devices.forEach(device => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${device.name}</td>
+                    <td>${device.address}</td>
+                    <td>${device.rssi}</td>
+                    <td>${device.last_seen}</td>
+                    <td>${device.local_name}</td>
+                    <td>${device.service_uuids}</td>
+                    <td>${device.manufacturer_data}</td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function refresh() {
+            loadStatus();
+            loadDevices();
+        }
+
+        setInterval(refresh, 2000);
+        refresh();
+    </script>
+</body>
+</html>
