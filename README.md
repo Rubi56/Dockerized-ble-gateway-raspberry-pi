@@ -1,7 +1,7 @@
 # VREL BLE Gateway
 
 This project implements a Dockerized Bluetooth Low Energy (BLE) gateway for the IoT VREL NextGen laboratory environment.
-
+![BLE Gateway System Workflow](figure/coverfigure.png)
 The application is designed to run on a Raspberry Pi with Docker. It performs BLE advertising and BLE scanning at the same time, and presents the captured BLE advertisement data on a web-based frontend.
 
 ## Main Functions
